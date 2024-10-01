@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>SVG Typewriter Effect</title>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/TextPlugin.min.js"></script>
+	</head>
+	<body>
+		<svg width="1200" height="200">
+			<text id="typewriter" x="10" y="100" font-family="Arial" font-size="24" fill="black">
+				Hello, world!
+			</text>
+		</svg>
+		<script>
+			const textElement = document.getElementById('typewriter');
+			const text = textElement.textContent;
+			gsap.registerPlugin(TextPlugin);
+
+			// Set initial text to empty
+			textElement.textContent = '';
+
+			// Animate typing effect
+			gsap.to(textElement, {
+				duration: 2, // Duration of the animation
+				delay: 1,
+				text: {
+					value: '✨ feat: new functions to the payment in credit card',
+					delimiter: '' // Optional, you can use any character for delimiter
+				},
+				ease: 'none' // Smooth constant speed
+			});
+		</script>
+	</body>
+</html>
