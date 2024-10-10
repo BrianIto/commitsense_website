@@ -14,15 +14,17 @@
 		let centerX = svgElement.node()!.clientWidth / 2;
 		let centerY = svgElement.node()!.clientHeight / 2;
 
-		let commitSpacing = 177;
+		let commitSpacing = 100;
 
-		let actualHeight = 84;
+		let actualHeight = 75;
 		const curveStartY = actualHeight * 0.6;
 		const controlPoint1Y = actualHeight * 0.4;
 		const controlPoint2Y = actualHeight * 0.05;
 		const endPointX = 33; // Fixed width of 30
 
-		const branchOut = (index: number) => {
+		const branchOut = (index: number, heightness: number) => {
+			const baseHeight = centerY - actualHeight;
+			const height = baseHeight - actualHeight * heightness;
 			svgElement
 				.append('path')
 				.attr('width', '33')
@@ -33,50 +35,58 @@
 				)
 				.attr('stroke', '#FFA6A6')
 				.attr('stroke-width', '6')
-				.attr('transform', `translate(${commitSpacing * index + 72 - 3}, ${centerY - actualHeight})`)
+				.attr('transform', `translate(${commitSpacing * index + 72 - 3}, ${height})`)
 				.attr('fill', 'transparent');
 		};
 
-		const lineBranch = (index: number, spacing = 1) => {
+		const lineBranch = (index: number, spacing = 1, heightness: number = 0) => {
+			const baseHeight = centerY - actualHeight;
+			const height = baseHeight - actualHeight * heightness;
+
 			svgElement
 				.append('path')
 				.attr('d', `M30 3H${commitSpacing * spacing - 30}`)
 				.attr('stroke', '#FFA6A6')
 				.attr('stroke-width', '6')
-				.attr('transform', `translate(${commitSpacing * spacing * index + 72}, ${centerY - actualHeight})`)
+				.attr('transform', `translate(${commitSpacing * index + 72}, ${height})`)
 				.attr('fill', 'transparent');
 		};
 
-		const branchMerge = (index: number, spacing: number = 1) => {
+		const branchMerge = (index: number, spacing: number = 1, heightness = 0) => {
+			const baseHeight = centerY - actualHeight;
+			const height = baseHeight - actualHeight * heightness;
+
 			svgElement
 				.append('path')
 				.attr('width', '33')
 				.attr('height', '84')
-				.attr('d', 'M3 83V51.6957C3 36.7888 3 3 33 3')
+				.attr('d', `M3 ${actualHeight}V${curveStartY}C3 ${controlPoint1Y} 3 ${controlPoint2Y} ${endPointX} 3`)
 				.attr('stroke', '#FFA6A6')
 				.attr('stroke-width', '6')
 				.attr(
 					'transform',
-					`translate(${commitSpacing * spacing * (index + 1) + 3 + 72}, ${centerY - 84}) scale(-1,1)`
+					`translate(${(commitSpacing * index + 72) + commitSpacing * spacing}, ${height}) scale(-1,1)`
 				)
 				.attr('fill', 'transparent');
 		};
 
-		const commitCircle = (index: number, spacing: number = 1) => {
+		const commitCircle = (index: number, spacing: number = 1, heightness = 0, isStart = true) => {
+			const height =  centerY - (heightness * actualHeight)
+			console.log(commitSpacing * spacing * index + 72, commitSpacing, spacing, index)
 			svgElement
 				.append('circle')
-				.attr('cx', commitSpacing * spacing * index + 72)
-				.attr('cy', centerY)
+				.attr('cx', (commitSpacing * index + (isStart ? 72 : 69)) + (isStart ? 0 : commitSpacing * (spacing -1)))
+				.attr('cy', height)
 				.attr('r', 14)
 				.attr('fill', '#FFA6A6');
 		};
 
-		const createBranch = (index: number, spacing: number = 1) => {
-			branchOut(index);
-			lineBranch(index, spacing);
-			branchMerge(index, spacing);
-			commitCircle(index);
-			commitCircle(index + 1, spacing);
+		const createBranch = (index: number, spacing: number = 1, heightness = 0) => {
+			branchOut(index, heightness);
+			lineBranch(index, spacing, heightness);
+			branchMerge(index, spacing, heightness);
+			commitCircle(index, spacing, heightness);
+			commitCircle(index + 1, spacing, heightness, false);
 		};
 
 		svgElement
@@ -88,8 +98,9 @@
 			.attr('stroke', 'gray')
 			.attr('stroke-width', '6px');
 
-		createBranch(0, 2);
-		createBranch(2, 1);
+		createBranch(0, 3);
+		createBranch(1, 1, 1)
+		createBranch(3, 1);
 	});
 </script>
 
